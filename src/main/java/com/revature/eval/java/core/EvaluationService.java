@@ -4,6 +4,9 @@ import java.time.temporal.Temporal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.ArrayList;
 
 public class EvaluationService {
 
@@ -205,41 +208,39 @@ public class EvaluationService {
 		char[] clean = new char[10];
 		int cleanIndex = 0;
 		char currChar;
-		for (int i = 0; i <string.length(); i++) {
+		for (int i = 0; i < string.length(); i++) {
 			currChar = string.charAt(i);
 			if (Character.isDigit(currChar)) {
-			switch (cleanIndex) {
-				case 0: 
+				switch (cleanIndex) {
+				case 0:
 					if (currChar == '1') {
 						break;
-						}
-					else {
+					} else {
 						clean[cleanIndex] = currChar;
 						cleanIndex++;
-						}
+					}
 					break;
-				
-				case 3: 
+
+				case 3:
 					if (currChar == '1') {
-					throw new IllegalArgumentException();
-						}
-					else {
+						throw new IllegalArgumentException();
+					} else {
 						clean[cleanIndex] = currChar;
 						cleanIndex++;
-						}
+					}
 					break;
-				
+
 				case 10:
 					throw new IllegalArgumentException();
-					
+
 				default:
 					clean[cleanIndex] = currChar;
 					cleanIndex++;
 				}
 			}
 		}
-		for (int i = 0; i<=9; i++) {
-			if(clean[i] == '\u0000') {
+		for (int i = 0; i <= 9; i++) {
+			if (clean[i] == '\u0000') {
 				throw new IllegalArgumentException();
 			}
 		}
@@ -257,11 +258,11 @@ public class EvaluationService {
 	 */
 	public Map<String, Integer> wordCount(String string) {
 		String[] parsed = string.split(",|\n| ");
-		for (String s: parsed) {
-			s = s.replaceAll(",","");
+		for (String s : parsed) {
+			s = s.replaceAll(",", "");
 		}
 		Map<String, Integer> counter = new HashMap<>();
-		for (String s: parsed) {
+		for (String s : parsed) {
 		}
 		for (String s : parsed) {
 			if (counter.containsKey(s)) {
@@ -353,30 +354,28 @@ public class EvaluationService {
 	 */
 	public String toPigLatin(String string) {
 		String[] parsed = string.split(" ");
-		
-			for (int i = 0; i <parsed.length; i++) {
-				boolean cons = true;
-				int consDepth = 0;
-				while (cons) {
-					char currChar = parsed[i].charAt(consDepth);
-					if (currChar == 'a' || currChar  == 'e'	|| currChar  == 'i'	|| currChar  == 'o'	|| currChar  == 'u') {
-						cons = false;
-					}
-					else if (currChar == 'q' && consDepth == 0) {
-						consDepth +=2;
-					}
-					else {
-						consDepth++;
-					}
+
+		for (int i = 0; i < parsed.length; i++) {
+			boolean cons = true;
+			int consDepth = 0;
+			while (cons) {
+				char currChar = parsed[i].charAt(consDepth);
+				if (currChar == 'a' || currChar == 'e' || currChar == 'i' || currChar == 'o' || currChar == 'u') {
+					cons = false;
+				} else if (currChar == 'q' && consDepth == 0) {
+					consDepth += 2;
+				} else {
+					consDepth++;
 				}
-				String front = parsed[i].substring(0, consDepth);
-				String back = parsed[i].substring(consDepth);
-				parsed[i] = back + front + "ay";
 			}
-			String trans = parsed[0];
-				for(int i =1; i <parsed.length;i++) {
-					trans += " " + parsed[i];
-				}
+			String front = parsed[i].substring(0, consDepth);
+			String back = parsed[i].substring(consDepth);
+			parsed[i] = back + front + "ay";
+		}
+		String trans = parsed[0];
+		for (int i = 1; i < parsed.length; i++) {
+			trans += " " + parsed[i];
+		}
 		return trans;
 	}
 
@@ -396,17 +395,18 @@ public class EvaluationService {
 	 * @return
 	 */
 	public boolean isArmstrongNumber(int input) {
-		//Convert input to string for easy manipulation
+		// Convert input to string for easy manipulation
 		String num = String.valueOf(input);
 		int sum = 0;
-		for (int i = 0; i<num.length(); i++) {
-			int curNum = Integer.valueOf(num.substring(i,i+1));
-			sum += Math.pow(curNum,num.length());
+		for (int i = 0; i < num.length(); i++) {
+			int curNum = Integer.valueOf(num.substring(i, i + 1));
+			sum += Math.pow(curNum, num.length());
 		}
-		if (sum ==input) {
+		if (sum == input) {
 			return true;
+		} else {
+			return false;
 		}
-		else {return false;}
 	}
 
 	/**
@@ -420,8 +420,17 @@ public class EvaluationService {
 	 * @return
 	 */
 	public List<Long> calculatePrimeFactorsOf(long l) {
-		// TODO Write an implementation for this method declaration
-		return null;
+		List<Long> factors = new ArrayList<Long>();
+		long i = 2;
+		while (i <= l) {
+			if (l % i == 0) {
+				l = l / i;
+				factors.add(i);
+			} else {
+				i++;
+			}
+		}
+		return factors;
 	}
 
 	/**
@@ -459,8 +468,22 @@ public class EvaluationService {
 		}
 
 		public String rotate(String string) {
-			// TODO Write an implementation for this method declaration
-			return null;
+			char[] encryptian = new char[string.length()];
+			for (int i = 0; i < string.length(); i++) {
+				char currChar = string.charAt(i);
+				if (Integer.valueOf(currChar) >= 97 && Integer.valueOf(currChar) <= 122) {
+					int asciiVal = Integer.valueOf(currChar);
+					asciiVal = ((asciiVal - 97 + this.key) % 26) + 97;
+					encryptian[i] = (char) asciiVal;
+				} else if (Integer.valueOf(currChar) >= 65 && Integer.valueOf(currChar) <= 90) {
+					int asciiVal = Integer.valueOf(currChar);
+					asciiVal = ((asciiVal - 65 + this.key) % 26) + 65;
+					encryptian[i] = (char) asciiVal;
+				} else {
+					encryptian[i] = currChar;
+				}
+			}
+			return String.valueOf(encryptian);
 		}
 
 	}
@@ -479,37 +502,26 @@ public class EvaluationService {
 	 */
 	public int calculateNthPrime(int i) {
 		// generate an array of size i and fill it from 1 to i
-		int[] nums = new int[i-1];
-		for (int j = 0; j< i-1; j++) {
-			nums[j] = j+2;
-		}
-		
-		for (int j = 0; j<i-2;j++) {
-			if(nums[j] != 0) {
-				int curr= nums[j];
-				boolean exceedArray = false;
-				int mult = 2;
-				
-				while (exceedArray = false) {
-					int currMult = mult*curr;
-					if (currMult< i) {
-						nums[j-2] = 0;
-					}
-					else { exceedArray = true;}
-				}
-				}
+		if (i < 1) {
+			throw new IllegalArgumentException();
 		}
 		int primeCount = 0;
-		for(int j = 0; j<i - 1; j++) {
-			if (nums[j] != 0) {
+		int currNum = 1;
+		while (primeCount < i) {
+			currNum++;
+			boolean currNumPrime = true;
+			for (int j = 2; j < currNum; j++) {
+				if (currNum % j == 0) {
+					currNumPrime = false;
+					break;
+				}
+			}
+			if (currNumPrime) {
 				primeCount++;
 			}
+
 		}
-		System.out.println(i-1);
-		if (nums[i-1] != 0) {
-		return primeCount;
-		}
-		else {throw new IllegalArgumentException();}
+		return currNum;
 	}
 
 	/**
@@ -545,8 +557,15 @@ public class EvaluationService {
 		 * @return
 		 */
 		public static String encode(String string) {
-			// TODO Write an implementation for this method declaration
-			return null;
+			string = string.toLowerCase();
+			string = string.replaceAll(",", "");
+			string = string.replaceAll(" ", "");
+			string = string.replaceAll("\\.", "");
+			StringBuilder base = new StringBuilder(decode(string.toLowerCase()));
+			for (int i = 5; i< base.length();i+= 6) {
+				base.insert(i,' ');
+			}
+			return base.toString();
 		}
 
 		/**
@@ -556,8 +575,19 @@ public class EvaluationService {
 		 * @return
 		 */
 		public static String decode(String string) {
-			// TODO Write an implementation for this method declaration
-			return null;
+			string = string.replaceAll(" ", "");
+			char[] decoded = new char[string.length()];
+			for (int i = 0; i < string.length(); i++) {
+				int currChar = string.charAt(i);
+				if (Integer.valueOf(currChar) >= 97 && Integer.valueOf(currChar) <= 122) {
+					int charDecoded = 122 - (Integer.valueOf(currChar) - 97);
+					decoded[i] = (char) charDecoded;
+				}  else {
+					decoded[i] = (char) currChar;
+				}
+				
+			}
+			return String.valueOf(decoded);
 		}
 	}
 
@@ -584,8 +614,42 @@ public class EvaluationService {
 	 * @return
 	 */
 	public boolean isValidIsbn(String string) {
-		// TODO Write an implementation for this method declaration
-		return false;
+		char[] clean= new char[10];
+		int currNum = 0;
+		for (int i= 0; i <string.length(); i++) {
+			if (Character.isDigit(string.charAt(i))) {
+				if (currNum < 10) {
+					clean[currNum] = string.charAt(i);
+					currNum++;				
+				}
+				else {return false;}
+			}
+			else if (string.charAt(i) == 'X') {
+				if (currNum == 9) {
+				clean[currNum] = string.charAt(i);
+				currNum++;
+				}
+			}
+		}
+		if (currNum != 10) {
+			return false;
+		}
+		System.out.println(String.valueOf(clean));
+		int formSum = 0;
+		for(int i = 0; i <9; i++) {
+			formSum += (10- i) * clean[i];
+		}
+		if (clean[9]== 'X') {
+			formSum += 10;
+		}
+		else {
+			formSum += clean[9];
+		}
+		System.out.println(formSum % 11);
+		if (formSum % 11 == 0) {
+			return true;
+		}
+		else {return false;}
 	}
 
 	/**
@@ -602,8 +666,20 @@ public class EvaluationService {
 	 * @return
 	 */
 	public boolean isPangram(String string) {
-		// TODO Write an implementation for this method declaration
-		return false;
+		string = string.toLowerCase();
+		Set<Character> letters = new HashSet<Character>();
+		for (int i = 0; i< string.length(); i++) {
+			char currChar = string.charAt(i);
+			if (Character.isLetter(currChar)) {
+				if (!letters.contains(currChar)){
+					letters.add(currChar);
+				}
+			}
+		}
+		if (letters.size() == 26) {
+			return true;
+		}
+		else {return false;}
 	}
 
 	/**
