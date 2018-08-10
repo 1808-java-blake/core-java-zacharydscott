@@ -1,12 +1,21 @@
 package com.revature.eval.java.core;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.HashSet;
-import java.util.ArrayList;
+
+import javax.swing.plaf.synth.SynthSpinnerUI;
+
+import org.omg.CosNaming.NamingContextPackage.NotFound;
+
+import java.time.*;
+import java.math.*;
 
 public class EvaluationService {
 
@@ -151,6 +160,7 @@ public class EvaluationService {
 		scoreKey.put('T', 1);
 		scoreKey.put('D', 2);
 		scoreKey.put('G', 2);
+		scoreKey.put('B', 3);
 		scoreKey.put('C', 3);
 		scoreKey.put('M', 3);
 		scoreKey.put('P', 3);
@@ -164,7 +174,7 @@ public class EvaluationService {
 		scoreKey.put('X', 8);
 		scoreKey.put('Q', 10);
 		scoreKey.put('Z', 10);
-
+		string = string.toUpperCase();
 		int scoreCount = 0;
 		for (int i = 0; i < string.length(); i++) {
 			char currChar = string.charAt(i);
@@ -316,7 +326,40 @@ public class EvaluationService {
 		private List<T> sortedList;
 
 		public int indexOf(T t) {
-			// TODO Write an implementation for this method declaration
+			int val = Integer.valueOf(String.valueOf(t));
+			boolean grounded = false;
+			int startIndex = 0;
+			int stopIndex = sortedList.size();
+			int checkIndex = 0;
+			while(!grounded) {
+				if((stopIndex - startIndex) % 2 == 1) {
+					checkIndex = (stopIndex +startIndex)/2;
+					switch ((int)Math.signum(val - Integer.valueOf(String.valueOf(sortedList.get(checkIndex))))) {
+						case 1:
+							startIndex = checkIndex +1;
+							break;
+						case -1:
+							stopIndex = checkIndex -1;
+							break;
+						case 0:
+							return checkIndex;
+					}
+				}
+					else {
+						checkIndex = (stopIndex +startIndex +1)/2 ;
+						switch ((int)Math.signum(val - Integer.valueOf(String.valueOf(sortedList.get(checkIndex))))) {
+							case 1:
+								startIndex = checkIndex +1;
+								break;
+							case -1:
+								stopIndex = checkIndex -1;
+								break;
+							case 0:
+								return checkIndex;
+					}
+				}
+				
+			}
 			return 0;
 		}
 
@@ -502,7 +545,7 @@ public class EvaluationService {
 	 */
 	public int calculateNthPrime(int i) {
 		// generate an array of size i and fill it from 1 to i
-		if (i < 1) {
+		if (i <1) {
 			throw new IllegalArgumentException();
 		}
 		int primeCount = 0;
@@ -614,19 +657,19 @@ public class EvaluationService {
 	 * @return
 	 */
 	public boolean isValidIsbn(String string) {
-		char[] clean= new char[10];
+		int[] clean= new int[10];
 		int currNum = 0;
 		for (int i= 0; i <string.length(); i++) {
 			if (Character.isDigit(string.charAt(i))) {
 				if (currNum < 10) {
-					clean[currNum] = string.charAt(i);
+					clean[currNum] = Integer.valueOf(string.substring(i,i+1));
 					currNum++;				
 				}
 				else {return false;}
 			}
 			else if (string.charAt(i) == 'X') {
 				if (currNum == 9) {
-				clean[currNum] = string.charAt(i);
+				clean[currNum] = 10;
 				currNum++;
 				}
 			}
@@ -634,18 +677,11 @@ public class EvaluationService {
 		if (currNum != 10) {
 			return false;
 		}
-		System.out.println(String.valueOf(clean));
 		int formSum = 0;
-		for(int i = 0; i <9; i++) {
+		System.out.println(clean);
+		for(int i = 0; i <10; i++) {
 			formSum += (10- i) * clean[i];
 		}
-		if (clean[9]== 'X') {
-			formSum += 10;
-		}
-		else {
-			formSum += clean[9];
-		}
-		System.out.println(formSum % 11);
 		if (formSum % 11 == 0) {
 			return true;
 		}
@@ -691,8 +727,19 @@ public class EvaluationService {
 	 * @return
 	 */
 	public Temporal getGigasecondDate(Temporal given) {
-		// TODO Write an implementation for this method declaration
-		return null;
+		if (given instanceof LocalDate && !(given instanceof LocalDateTime)) {
+			LocalDate date = (LocalDate) given;
+			LocalTime time = LocalTime.of(0, 0, 0, 0);
+			LocalDateTime dateTime = LocalDateTime.of(date, time);
+			return dateTime.plus(1000000000,ChronoUnit.SECONDS);
+		}
+		else if (given instanceof LocalDateTime) {
+		LocalDate date = ((LocalDateTime) given).toLocalDate();
+		LocalTime time = ((LocalDateTime) given).toLocalTime();
+		LocalDateTime dateTime = LocalDateTime.of(date, time);
+		return dateTime.plus(1000000000,ChronoUnit.SECONDS);
+		}
+		throw new IllegalArgumentException();
 	}
 
 	/**
@@ -709,8 +756,27 @@ public class EvaluationService {
 	 * @return
 	 */
 	public int getSumOfMultiples(int i, int[] set) {
-		// TODO Write an implementation for this method declaration
-		return 0;
+		// Creates a HashSet to store multiples in, since duplicates won't add, then 
+		// runs through the multiples and adds them
+		HashSet<Integer> uniqueMults = new HashSet<>();
+		int multiple = 0;
+		int multiplier = 1;
+		for(int j: set) {
+			multiplier = 1;
+			multiple = j;
+			while (multiple < i) {
+				uniqueMults.add(multiple);
+				multiplier++;
+				multiple = j*multiplier;
+			}
+		}
+			
+		//Once the List is generated, the values must be added
+		int sum = 0;
+		for(int l: uniqueMults) {
+			sum += l;
+		}
+		return sum;
 	}
 
 	/**
@@ -750,8 +816,34 @@ public class EvaluationService {
 	 * @return
 	 */
 	public boolean isLuhnValid(String string) {
-		// TODO Write an implementation for this method declaration
-		return false;
+		ArrayList<Integer> digits = new ArrayList<>();
+		for (int i = 0 ; i <string.length(); i++) {
+			char currChar = string.charAt(i);
+			if (Character.isDigit(currChar)) {
+				digits.add(0,Character.getNumericValue(currChar));
+			}
+			else if (currChar == ' '){
+			}
+			else {return false;}
+		}
+		if (digits.size() <2) {
+			return false;
+		}
+		for (int j = 1; j<digits.size();j+=2) {
+			int currDouble = digits.get(j)*2;
+			if (currDouble > 9) {
+				currDouble = currDouble - 9;
+			}
+			digits.set(j, currDouble);
+		}
+		int digitSum = 0;
+		for (int k = 0; k <digits.size(); k++) {
+			digitSum = digitSum + digits.get(k);
+		}
+		if (digitSum % 10 ==0) {
+			return true;
+		}
+		else {return false;}
 	}
 
 	/**
@@ -782,8 +874,42 @@ public class EvaluationService {
 	 * @return
 	 */
 	public int solveWordProblem(String string) {
-		// TODO Write an implementation for this method declaration
-		return 0;
+		String[] parsed = string.split(" ");
+		int argsOneIndex = 0;
+		int operatorIndex = 0;
+		int argsTwoIndex = 0;
+		for (int i = 0;i<parsed.length;i++) {
+			if (Character.isDigit(parsed[i].charAt(0))||parsed[i].charAt(0) =='-' ) {
+				argsOneIndex = i;
+				break;
+			}
+		}
+		
+		for (int i = argsOneIndex+1;i<parsed.length;i++) {
+			if (!Character.isDigit(parsed[i].charAt(0))) {
+				operatorIndex = i;
+				break;
+			}
+		}
+		
+		for (int i = operatorIndex+1;i<parsed.length;i++) {
+			if (Character.isDigit(parsed[i].charAt(0))||parsed[i].charAt(0) =='-') {
+				argsTwoIndex = i;
+				break;
+			}
+		}
+		switch (parsed[operatorIndex].substring(0,2)){
+		case "pl":
+			return Integer.valueOf(parsed[argsOneIndex]) + Integer.valueOf(parsed[argsTwoIndex].replaceAll("[ .?:;]",""));
+		case "mi":
+			return Integer.valueOf(parsed[argsOneIndex]) - Integer.valueOf(parsed[argsTwoIndex].replaceAll("[ .?:;]",""));
+		case "di":
+			return Integer.valueOf(parsed[argsOneIndex]) / Integer.valueOf(parsed[argsTwoIndex].replaceAll("[ .?:;]",""));
+		case "mu":
+			return Integer.valueOf(parsed[argsOneIndex]) * Integer.valueOf(parsed[argsTwoIndex].replaceAll("[ .?:;]",""));
+			default:
+				return (int) 0;
+		}
 	}
 
 }
